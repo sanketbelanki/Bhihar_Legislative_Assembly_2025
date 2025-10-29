@@ -1,0 +1,7 @@
+{
+  "data": [
+    { "party": "NDA", "color": "#ff7f0e", "seats": 100 },
+    { "party": "INDIA", "color": "#1f77b4", "seats": 100 },
+    { "party": "OTHER", "color": "#d62728", "seats": 88 }
+  ]
+}
