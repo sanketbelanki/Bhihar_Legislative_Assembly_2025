@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parliament Chart</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="co-ords.js"></script>
+    <style>
+      .chart {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        position: relative;
+        flex-direction: column;
+      }
+      #chart {
+        width: 1920px;
+        height: 1080px;
+      }
+      .legend {
+        text-align: center;
+        margin-top: 20px;
+      }
+      .legend div {
+        display: inline-block;
+        margin-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chart" id="chart"></div>
+    <div class="legend" id="legend"></div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        d3.json("chartData.json").then(function (response) {
+          const data = response.data;
+          console.log(data);
+          // Set the dimensions and margins of the chart
+          const width = 1800;
+          const height = 1000;
+          const seatRadius = 15;
+
+          // Calculate the total number of seats
+          const totalSeats = data.reduce((acc, cur) => acc + cur.seats, 0);
+
+          // Append the svg object to the body of the page
+          const svg = d3
+            .select("#chart")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("viewBox", `${-width / 2} ${-height / 2} ${width} ${height}`)
+            .node();
+
+          // Append a <g> element to the SVG
+          const group = d3
+            .select(svg)
+            .append("g")
+            .attr("transform", "scale(1.1) translate(-300,250)");
+
+          // Draw seats using D3
+          let currentSeatIndex = 0;
+          data.forEach((party) => {
+            for (let i = 0; i < party.seats; i++) {
+              if (currentSeatIndex >= coords.length) break; // Ensure we don't exceed available coordinates
+              const coord = coords[currentSeatIndex];
+              group
+                .append("circle")
+                .attr("cx", coord.x)
+                .attr("cy", coord.y)
+                .attr("r", seatRadius)
+                .attr("fill", party.color);
+              currentSeatIndex++;
+            }
+          });
+
+          // Draw total seats in the center
+          group
+            .append("text")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "100px")
+            .attr("font-weight", "bold")
+            .text(totalSeats);
+
+          group
+            .append("text")
+            .attr("x", 0)
+            .attr("y", 60)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "30px")
+            .text("Total Seats");
+
+          // Draw legend
+          const legend = d3.select("#legend");
+          data.forEach((party) => {
+            const legendItem = legend
+              .append("div")
+              .style("display", "flex")
+              .style("align-items", "center")
+              .style("margin-right", "10px");
+
+            // legendItem
+            //   .append("div")
+            //   .style("background-color", party.color)
+            //   .style("width", "20px")
+            //   .style("height", "20px")
+            //   .style("display", "inline-block")
+            //   .style("margin-right", "5px");
+
+            // legendItem.append("span").text(`${party.party}: ${party.seats}`);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
